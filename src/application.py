@@ -31,16 +31,17 @@ def list_tracks():
     # Not sure if it is necessary right now to remove the excess data,
     # but I'll keep it around so its easier for the frontend
     returned_tracks = r["tracks"]["items"]
-    tracks = [
-        {
-            "track_name": t["name"],
-            "track_id": t["id"],
-            "artists": t["artists"],
-            "preview_url": t["preview_url"]
-        } for t in returned_tracks
-    ]
+    tracks = {"tracks": [
+           {
+                "track_name": t["name"],
+                "track_id": t["id"],
+                "artists": t["artists"],
+                "preview_url": t["preview_url"]
+            } for t in returned_tracks
+        ]
+    }
 
-    return json.dumps(tracks)
+    return tracks
 
 
 # Keep this for debugging
