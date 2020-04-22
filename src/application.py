@@ -7,10 +7,11 @@ app = Flask(__name__)
 ACCESS_TOKEN = environ.get('SPOTIFY_API_KEY')
 SPOTIFY_API_URL = "https://api.spotify.com/v1"
 SEARCH_LIMIT = 5
+API_PATH = "/api/v1"
 
 
 # Keep this for debugging
-@app.route('/key')
+@app.route(API_PATH + '/key')
 def get_api_key():
     if ACCESS_TOKEN:
         return ACCESS_TOKEN
@@ -18,7 +19,7 @@ def get_api_key():
         return "No access token found"
 
 
-@app.route('/search')
+@app.route(API_PATH + '/search')
 def list_tracks():
     q = request.args.get('q')
     r = requests.get(
@@ -43,7 +44,7 @@ def list_tracks():
 
 
 # Keep this for debugging
-@app.route('/analyze/<track_id>')
+@app.route(API_PATH + '/analyze/<track_id>')
 def analyze_track(track_id):
     r = requests.get(
         SPOTIFY_API_URL + "/audio-features/" + track_id,
@@ -52,7 +53,7 @@ def analyze_track(track_id):
     return r
 
 
-@app.route('/recommend/<track_id>')
+@app.route(API_PATH + '/recommend/<track_id>')
 def recommend_tracks(track_id):
     track_data = analyze_track(track_id)
     request_params = {
