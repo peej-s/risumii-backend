@@ -1,40 +1,43 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Recommendations</title>
-    </head>
-    <body>
-        <h1>Recommendations</h1>
-        <a href="/">
-            Go home
-        </a>
-        <ul>
-            {% for track in tracks %}
-                <li>
-                    <a href="{{ track.href['spotify'] }}">
-                        {{ track.name }}
-                    </a>
-                    <p>
-                        Artists:
-                        <ul>
-                            {% for artist in track.artists %}
-                                <li>
-                                    <a href="{{ artist.external_urls['spotify'] }}">
-                                        {{ artist.name }}
-                                    </a>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    </p>
-                    <a href="{{ track.preview_url }}">
-                        Preview
-                    </a>
-                    <p></p>
-                </li>
-            {% endfor %}
-        </ul>
-        <a href="/">
-            Go home
-        </a>
-    </body>
+   <head>
+      <title>Recommendations for {{ track_name }}</title>
+   </head>
+   <body>
+      <h1>Recommendations for {{ track_name }}</h1>
+      <div class="search-container">
+         <form action="/search">
+            <input type="text" name="q" required>
+            <button type="submit">Search</button>
+         </form>
+      </div>
+      <ul>
+         {% for track in tracks %}
+         <li>
+            <a href="{{ track.href['spotify'] }}">
+            {{ track.name }}
+            </a>
+            <p>
+               Artists:
+            <ul>
+               {% for artist in track.artists %}
+               <li>
+                  <a href="{{ artist.external_urls['spotify'] }}">
+                  {{ artist.name }}
+                  </a>
+               </li>
+               {% endfor %}
+            </ul>
+            </p>
+            <a href="{{ track.preview_url }}">
+            Preview
+            </a>
+            <p></p>
+         </li>
+         {% endfor %}
+      </ul>
+      <a href="/">
+      Go home
+      </a>
+   </body>
 </html>
