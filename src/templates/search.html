@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Search Results for {{ query }}</title>
+    </head>
+    <body>
+        <h1>Search Results for {{ query }}</h1>
+        <ul>
+            {% for track in tracks %}
+                <li>
+                    <a href="{{ track.href['spotify'] }}">
+                        {{ track.track_name }}
+                    </a>
+                    <p>
+                        Artists:
+                        {% for artist in track.artists %}
+                        <a href="{{ artist.external_urls['spotify'] }}">
+                            {{ artist.name }}
+                        </a>
+                        {% endfor %}
+                    </p>
+                    <a href="{{ track.preview_url }}">
+                        Preview
+                    </a>
+                    <p></p>
+                </li>
+            {% endfor %}
+        </ul>
+        <a href="/">
+            Go back
+        </a>
+    </body>
+</html>
