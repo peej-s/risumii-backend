@@ -12,8 +12,8 @@ API_PATH = "/api/v1"
 API_ACCESS_TOKEN = ""
 TOKEN_EXPIRY = datetime.now()
 
-## API
 
+# API
 def verify_token():
     global API_ACCESS_TOKEN
     global TOKEN_EXPIRY
@@ -27,19 +27,9 @@ def verify_token():
                 headers={"Authorization": "Basic " + CLIENT_CREDENTIALS},
             ).json()
             API_ACCESS_TOKEN = token_response["access_token"]
-            TOKEN_EXPIRY = current_time + timedelta(seconds=int(token_response["expires_in"]))
+            expiry_time = int(token_response["expires_in"])
+            TOKEN_EXPIRY = current_time + timedelta(seconds=expiry_time)
     return API_ACCESS_TOKEN
-
-# Keep this for debugging
-@app.route(API_PATH + '/key')
-def get_api_key():
-    token = verify_token()
-    if token != "":
-        return token
-    else:
-        # This should be the only time a user sees this message. If there is missing credentials
-        # and we are unable to hit the API, that's a server-side issue
-        return "No access token found. Did you set the SPOTIFY_CLIENT_CREDENTIALS variable?"
 
 
 @app.route(API_PATH + '/search')
@@ -103,11 +93,12 @@ def recommend_tracks(track_id):
     ).json()["name"]
     return r, track_name
 
-## Server-Side Rendering
 
+# Server-Side Rendering
 @app.route('/')
 def render_homepage():
     return render_template("index.html")
+
 
 @app.route('/search')
 def render_search_tracks():
@@ -115,10 +106,15 @@ def render_search_tracks():
     tracks = search_tracks()["tracks"]
     return render_template("search.html", tracks=tracks, query=query)
 
+
 @app.route('/recommend/<track_id>')
 def render_recommend_tracks(track_id):
     recommended_tracks, track_name = recommend_tracks(track_id)
-    return render_template("recommend.html", tracks=recommended_tracks, track_name=track_name)
+    return render_template(
+        "recommend.html",
+        tracks=recommended_tracks,
+        track_name=track_name,
+    )
 
 
 def main():
