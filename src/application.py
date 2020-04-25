@@ -33,8 +33,8 @@ def search_tracks():
         returned_tracks = r["tracks"]["items"]
         tracks = {"tracks": [
             {
-                    "track_name": t["name"],
-                    "track_id": t["id"],
+                    "name": t["name"],
+                    "id": t["id"],
                     "artists": t["artists"],
                     "href": t["external_urls"],
                     "preview_url": t["preview_url"],
@@ -70,19 +70,24 @@ def recommend_tracks(track_id):
         SPOTIFY_API_URL + "/recommendations",
         params=request_params,
         headers={"Authorization": "Bearer " + ACCESS_TOKEN}
-    ).json()
+    ).json()["tracks"]
     return r
 
 ## Server-Side Rendering
 
 @app.route('/')
-def homepage():
+def render_homepage():
     return render_template("index.html")
 
 @app.route('/search')
-def render_tracks():
+def render_search_tracks():
     tracks = search_tracks()["tracks"]
     return render_template("search.html", tracks=tracks, query=request.args.get('q'))
+
+@app.route('/recommend/<track_id>')
+def render_recommend_tracks(track_id):
+    recommended_tracks = recommend_tracks(track_id)
+    return render_template("recommend.html", tracks=recommended_tracks)
 
 
 def main():
