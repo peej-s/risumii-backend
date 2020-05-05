@@ -11,6 +11,8 @@ SEARCH_LIMIT = 20
 API_PATH = "/api/v1"
 API_ACCESS_TOKEN = ""
 TOKEN_EXPIRY = datetime.now()
+OFFSET_KEY = 0
+OFFSET_TEMPO = 20
 
 
 # API
@@ -72,26 +74,32 @@ def analyze_track(track_id):
 
 
 @app.route(API_PATH + '/recommend/<track_id>')
-def recommend_tracks(track_id):
+def recommend_tracks(track_id, html_render=False):
     token = verify_token()
     track_data = analyze_track(track_id)
     request_params = {
         "seed_tracks": track_id,
-        "target_key": track_data["key"],
-        "target_tempo": track_data["tempo"],
+        "min_key": track_data["key"],
+        "max_key": track_data["key"],
+        "min_tempo": track_data["tempo"] - OFFSET_TEMPO,
+        "max_tempo": track_data["tempo"] + OFFSET_TEMPO,
         "limit": SEARCH_LIMIT
     }
+
     r = requests.get(
         SPOTIFY_API_URL + "/recommendations",
         params=request_params,
         headers={"Authorization": "Bearer " + token}
-    ).json()["tracks"]
+    ).json()
 
-    track_name = requests.get(
-        SPOTIFY_API_URL + "/tracks/" + track_id,
-        headers={"Authorization": "Bearer " + token}
-    ).json()["name"]
-    return r, track_name
+    if (not html_render):
+        return r
+    else:
+        track_name = requests.get(
+            SPOTIFY_API_URL + "/tracks/" + track_id,
+            headers={"Authorization": "Bearer " + token}
+        ).json()["name"]
+        return r["tracks"], track_name
 
 
 # Server-Side Rendering
@@ -109,7 +117,7 @@ def render_search_tracks():
 
 @app.route('/recommend/<track_id>')
 def render_recommend_tracks(track_id):
-    recommended_tracks, track_name = recommend_tracks(track_id)
+    recommended_tracks, track_name = recommend_tracks(track_id, True)
     return render_template(
         "recommend.html",
         tracks=recommended_tracks,
