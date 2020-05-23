@@ -1,4 +1,4 @@
-# unnamedMusicApp
+# Risumii (リスミー)
 
 Cool music app that will probably do this:
 Take a song and find other songs that have a matching Key and BPM, and return that back to a user so they can make a cool playlist or something
