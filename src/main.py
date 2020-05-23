@@ -76,7 +76,7 @@ def recommend_tracks(track_id):
     token = verify_token()
     track_data = analyze_track(track_id)
     if "error" in track_data:
-        return {"error": "Invalid track id provided"}
+        return {"error": "Invalid track_id provided"}
 
     request_params = {
         "seed_tracks": track_id,
