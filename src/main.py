@@ -37,6 +37,7 @@ def verify_token():
 @app.route(API_PATH + '/search')
 def search_tracks():
     q = request.args.get('q')
+    tracks = {"tracks": []}
     if (q != ""):
         token = verify_token()
         r = requests.get(
@@ -46,24 +47,21 @@ def search_tracks():
         ).json()
 
         returned_tracks = r["tracks"]["items"]
-        tracks = {"tracks": [
+        tracks["tracks"] = [
             {
-                    "name": t["name"],
-                    "id": t["id"],
-                    "artists": t["artists"],
-                    "href": t["external_urls"],
-                    "preview_url": t["preview_url"],
-                } for t in returned_tracks
-            ]
-        }
-    else:
-        tracks = {"tracks": []}
+                "name": t["name"],
+                "id": t["id"],
+                "artists": t["artists"],
+                "href": t["external_urls"],
+                "preview_url": t["preview_url"],
+            } for t in returned_tracks
+        ]
 
     return tracks
 
 
 # Keep this for debugging
-@app.route(API_PATH + '/analyze/<track_id>')
+@ app.route(API_PATH + '/analyze/<track_id>')
 def analyze_track(track_id):
     token = verify_token()
     r = requests.get(
@@ -73,10 +71,13 @@ def analyze_track(track_id):
     return r
 
 
-@app.route(API_PATH + '/recommend/<track_id>')
-def recommend_tracks(track_id, html_render=False):
+@ app.route(API_PATH + '/recommend/<track_id>')
+def recommend_tracks(track_id):
     token = verify_token()
     track_data = analyze_track(track_id)
+    if "error" in track_data:
+        return {"error": "Invalid track id provided"}
+
     request_params = {
         "seed_tracks": track_id,
         "min_key": track_data["key"],
@@ -92,41 +93,18 @@ def recommend_tracks(track_id, html_render=False):
         headers={"Authorization": "Bearer " + token}
     ).json()
 
-    if (not html_render):
-        return r
-    else:
-        track_name = requests.get(
-            SPOTIFY_API_URL + "/tracks/" + track_id,
-            headers={"Authorization": "Bearer " + token}
-        ).json()["name"]
-        return r["tracks"], track_name
+    track_name = requests.get(
+        SPOTIFY_API_URL + "/tracks/" + track_id,
+        headers={"Authorization": "Bearer " + token}
+    ).json()["name"]
 
-
-# Server-Side Rendering
-@app.route('/')
-def render_homepage():
-    return render_template("index.html")
-
-
-@app.route('/search')
-def render_search_tracks():
-    query = request.args.get('q')
-    tracks = search_tracks()["tracks"]
-    return render_template("search.html", tracks=tracks, query=query)
-
-
-@app.route('/recommend/<track_id>')
-def render_recommend_tracks(track_id):
-    recommended_tracks, track_name = recommend_tracks(track_id, True)
-    return render_template(
-        "recommend.html",
-        tracks=recommended_tracks,
-        track_name=track_name,
-    )
+    response = {"seed_name": track_name, "tracks": r["tracks"]}
+    return response
 
 
 def main():
     app.run()
+
 
 if __name__ == "__main__":
     main()
