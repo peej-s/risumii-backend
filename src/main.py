@@ -1,10 +1,12 @@
 from os import environ
 from flask import Flask, request, render_template
+from flask_cors import CORS
 import requests
 import json
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "https://risumii-app.netlify.app"}})
 CLIENT_CREDENTIALS = environ.get('SPOTIFY_CLIENT_CREDENTIALS')
 SPOTIFY_API_URL = "https://api.spotify.com/v1"
 SEARCH_LIMIT = 20
