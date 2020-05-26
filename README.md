@@ -1,7 +1,7 @@
 # Risumii (リスミー)
 
 Cool music app allows a user to search for a song (by artist or by title) and find playlist recommendations for that song (matching key and similar BPM)
-Also this was Maydha's idea not mine.
+Also this was Maydha's idea not mine.  
 Frontend can be found here: https://github.com/peej-s/risumii-frontend
 
 https://risumii-project.nn.r.appspot.com/
